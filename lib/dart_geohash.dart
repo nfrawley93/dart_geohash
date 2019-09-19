@@ -14,7 +14,7 @@ enum Direction {
   CENTRAL
 }
 
-class GeoHash {
+class GeoHasher {
   static String _baseSequence = '0123456789bcdefghjkmnpqrstuvwxyz';
 
   Map<String, int> _base32Map =
@@ -247,5 +247,100 @@ class GeoHash {
           geohash: _adjacent(geohash: geohash, direction: 'n'), direction: 'w'),
       Direction.CENTRAL.toString().split(".")[1]: geohash
     };
+  }
+}
+
+class GeoHash {
+  String _geohash;
+  double _longitude;
+  double _latitude;
+  Map<String, String> _neighbors;
+
+  String get geohash {
+    return _geohash;
+  }
+
+  double longitude({int decimalAccuracy}) {
+    if(decimalAccuracy == null)
+      return _longitude;
+    else {
+
+    }
+      return double.parse(_longitude.toStringAsFixed(decimalAccuracy));
+  }
+
+  double latitude({int decimalAccuracy}) {
+    if(decimalAccuracy == null)
+      return _latitude;
+    else
+      return double.parse(_latitude.toStringAsFixed(decimalAccuracy));
+  }
+
+  Map<String, String> get neighbors {
+    return _neighbors;
+  }
+
+  String neighbor(Direction direction) {
+    return _neighbors[direction.toString().split(".")[1]];
+  }
+
+  // Constructor for string geohash
+  GeoHash(String geohash){
+    _geohash = geohash;
+    _neighbors = GeoHasher().neighbors(geohash);
+    _longitude = GeoHasher().decode(geohash)[0];
+    _latitude = GeoHasher().decode(geohash)[1];
+  }
+
+  // Constructor for decimal degrees
+  GeoHash.fromDecimalDegrees(double longitude, double latitude, {int precision = 9}) {
+    this._longitude = longitude;
+    this._latitude = latitude;
+    _geohash = GeoHasher().encode(longitude, latitude, precision: precision);
+    _neighbors = GeoHasher().neighbors(_geohash);
+  }
+
+  // Requires both geohash to be at same precision
+  bool isNeighbor(String geohash) {
+
+    if(geohash.length != _geohash.length)
+      return false;
+
+    bool contains = false;
+    _neighbors.forEach((key, value) {
+      if(value == geohash)
+        contains = true;
+    });
+
+    return contains;
+  }
+
+  // Returns true if the given geohash contains this one within it.
+  bool isInside(String geohash) {
+    if(geohash.length > _geohash.length)
+      return false;
+
+    if(_geohash.substring(0, geohash.length) == geohash) {
+      return true;
+    }
+
+    return false;
+  }
+
+  // Returns true if the given geohash is contained within this geohash
+  bool contains(String geohash) {
+    if(geohash.length < _geohash.length)
+      return false;
+
+    if(geohash.substring(0, _geohash.length) == _geohash) {
+      return true;
+    }
+
+    return false;
+  }
+
+  // Returns a new Geohash for the parent of this one.
+  GeoHash parent() {
+    return GeoHash(_geohash.substring(0,_geohash.length-1));
   }
 }

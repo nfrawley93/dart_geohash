@@ -5,7 +5,7 @@ import 'package:dart_geohash/dart_geohash.dart';
 void main() {
 
   test('Test decoding geohash', (){
-    final geohash = GeoHash();
+    final geohash = GeoHasher();
 
     // region Test Decode
     expect(geohash.decode("0"), [-157.5, -67.5]);
