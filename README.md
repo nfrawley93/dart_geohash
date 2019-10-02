@@ -30,5 +30,4 @@ geoHasher.decode("9yf0zhhtj"); // Returns decimal longitude/latitude
 geoHasher.neighbors("9yf0zhhtj"); // Returns itself and 8 neighbors as a Map
 ```
 ## 
-##
 Based on the Python Package [Mapzen GeoHash](https://github.com/transitland/mapzen-geohash)
