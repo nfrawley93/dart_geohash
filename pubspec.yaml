@@ -1,7 +1,7 @@
 name: dart_geohash
 description: A simple encode, decode, and neighbor finder for longitude/latitude and geohash.
 version: 1.0.0
-author: Nicholas Frawley
+author: Nicholas Frawley <nicholas.frawley@outlook.com>
 homepage: https://nicholasfrawley.com
 repository: https://github.com/nfrawley93/dart_geohash
 
