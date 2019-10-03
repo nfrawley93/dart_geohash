@@ -1,6 +1,5 @@
-import 'package:flutter_test/flutter_test.dart';
-
 import 'package:dart_geohash/dart_geohash.dart';
+import 'package:test/test.dart';
 
 void main() {
 
@@ -15,8 +14,8 @@ void main() {
     expect(geohash.decode("9v6kn87zgbbbbbbbbbb"), [-97.7949811566264, 30.237082819785357]);
 
     // Multiple ones that should throw an Exception
-    expect(() => geohash.decode("a"), throwsAssertionError);
-    expect(() => geohash.decode("-0"), throwsAssertionError);
+    expect(() => geohash.decode("a"), throwsArgumentError);
+    expect(() => geohash.decode("-0"), throwsArgumentError);
     expect(() => geohash.decode(""), throwsArgumentError);
     expect(() => geohash.decode(null), throwsArgumentError);
     //endregion
@@ -49,8 +48,8 @@ void main() {
     });
 
     // Multiple ones that should throw an Exception
-    expect(() => geohash.neighbors("a"), throwsAssertionError);
-    expect(() => geohash.neighbors("-0"), throwsAssertionError);
+    expect(() => geohash.neighbors("a"), throwsArgumentError);
+    expect(() => geohash.neighbors("-0"), throwsArgumentError);
     expect(() => geohash.neighbors(""), throwsArgumentError);
     expect(() => geohash.neighbors(null), throwsArgumentError);
     //endregion

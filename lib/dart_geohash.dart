@@ -167,7 +167,7 @@ class GeoHasher {
       throw ArgumentError.value(geohash, "geohash");
     else if (!geohash
         .contains(new RegExp(r'^[0123456789bcdefghjkmnpqrstuvwxyz]+$')))
-      throw AssertionError("Invalid character in GeoHash");
+      throw ArgumentError("Invalid character in GeoHash");
 
     List<int> bits = _geoHashToBits(geohash);
     List<int> longitudeBits = List<int>();
@@ -241,7 +241,7 @@ class GeoHasher {
       throw ArgumentError.value(geohash, "geohash");
     else if (!geohash
         .contains(new RegExp(r'^[0123456789bcdefghjkmnpqrstuvwxyz]+$')))
-      throw AssertionError("Invalid character in GeoHash");
+      throw ArgumentError("Invalid character in GeoHash");
 
     return {
       Direction.NORTH.toString().split(".")[1]:
