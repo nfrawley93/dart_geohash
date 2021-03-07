@@ -1,0 +1,4 @@
+# https://dart.dev/guides/language/analysis-options
+# https://pub.dev/packages/pedantic
+# https://pub.dev/packages/pedantic#stricter-than-effective-dart
+include: package:pedantic/analysis_options.yaml
