@@ -102,21 +102,23 @@ class GeoHasher {
   List<int> _geoHashToBits(String geohash) {
     final bitList = <int>[];
 
-    geohash.split('').forEach((letter) {
-      if (_base32Map[letter] != null) {
-        final buffer = Uint8List(5).buffer;
-        final bufferData = ByteData.view(buffer);
-
-        bufferData.setUint32(0, _base32Map[letter]!);
-        for (final letter in bufferData
-            .getUint32(0)
-            .toRadixString(2)
-            .padLeft(5, '0')
-            .split('')) {
-          bitList.add(int.parse(letter));
-        }
+    for (final letter in geohash.split('')) {
+      if (_base32Map[letter] == null) {
+        continue;
       }
-    });
+
+      final buffer = Uint8List(5).buffer;
+      final bufferData = ByteData.view(buffer);
+
+      bufferData.setUint32(0, _base32Map[letter]!);
+      for (final letter in bufferData
+          .getUint32(0)
+          .toRadixString(2)
+          .padLeft(5, '0')
+          .split('')) {
+        bitList.add(int.parse(letter));
+      }
+    }
 
     return bitList;
   }
