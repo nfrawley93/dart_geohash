@@ -208,8 +208,10 @@ class GeoHasher {
     required String geohash,
     required String direction,
   }) {
-    assert(direction.contains(RegExp(r'[nsewNSEW]')) == true,
-        'Invalid Direction $direction not in NSEW');
+    assert(
+      direction.contains(RegExp(r'[nsewNSEW]')) == true,
+      'Invalid Direction $direction not in NSEW',
+    );
     if (geohash == '') {
       throw ArgumentError.value(geohash, 'geohash');
     }
