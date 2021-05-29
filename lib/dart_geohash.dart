@@ -20,7 +20,7 @@ class GeoHasher {
   static String _baseSequence = '0123456789bcdefghjkmnpqrstuvwxyz';
 
   /// Creates a Map of available characters for a geohash
-  Map<String, int> _base32Map =
+  Map<String /*!*/, int> _base32Map =
       Map.fromIterable(_baseSequence.split(""), key: (key) {
     return key;
   }, value: (value) {
@@ -28,7 +28,7 @@ class GeoHasher {
   });
 
   /// Creates a reversed Map of available characters for a geohash
-  Map<int, String> _base32MapR =
+  Map<int, String /*!*/ > _base32MapR =
       Map.fromIterable(_baseSequence.split(""), key: (key) {
     return _baseSequence.indexOf(key);
   }, value: (value) {
@@ -37,7 +37,7 @@ class GeoHasher {
 
   /// Converts a List<int> of bits into a double for Longitude and Latitude
   double _bitsToDouble(
-      {List<int> bits,
+      {required List<int> bits,
       double lower = -90.0,
       double middle = 0.0,
       double upper = 90.0}) {
@@ -54,12 +54,12 @@ class GeoHasher {
 
   /// Converts a double value Longitude or Latitude to a List<int> of bits
   List<int> _doubleToBits(
-      {double value,
+      {required double value,
       double lower = -90.0,
       double middle = 0.0,
       double upper = 90.0,
       int length = 15}) {
-    List<int> ret = List<int>();
+    List<int> ret = [];
 
     for (int i = 0; i < length; i++) {
       if (value >= middle) {
@@ -78,8 +78,8 @@ class GeoHasher {
   /// Converts a List<int> bits into a String geohash
   String _bitsToGeoHash(List<int> bitValue) {
     List<int> remainingBits = List<int>.from(bitValue);
-    List<int> subBits = List<int>();
-    List<String> geoHashList = List<String>();
+    List<int> subBits = [];
+    List<String> geoHashList = [];
 
     String subBitsAsString;
     int value;
@@ -92,7 +92,7 @@ class GeoHasher {
       });
       value = int.parse(int.parse(subBitsAsString, radix: 2).toRadixString(10));
 
-      geoHashList.add(_base32MapR[value]);
+      geoHashList.add(_base32MapR[value]!);
     }
 
     return geoHashList.join("");
@@ -100,15 +100,15 @@ class GeoHasher {
 
   /// Converts a String geohash into List<int> bits
   List<int> _geoHashToBits(String geohash) {
-    List<int> letterNumValue = List<int>();
-    List<int> bitList = List<int>();
+    List<int> letterNumValue = [];
+    List<int> bitList = [];
     geohash.split("").forEach((letter) {
       if (_base32Map[letter] != null) {
-        letterNumValue.add(_base32Map[letter]);
+        letterNumValue.add(_base32Map[letter]!);
 
         ByteBuffer buffer = Uint8List(5).buffer;
         ByteData bufferData = ByteData.view(buffer);
-        bufferData.setUint32(0, _base32Map[letter]);
+        bufferData.setUint32(0, _base32Map[letter]!);
         bufferData
             .getUint32(0)
             .toRadixString(2)
@@ -127,11 +127,10 @@ class GeoHasher {
   String encode(double longitude, double latitude, {int precision = 12}) {
     bool precisionOdd = precision % 2 == 1;
     int originalPrecision = precision + 0;
-    if (longitude == null || latitude == null) throw ArgumentError.notNull();
     if (longitude < -180.0 || longitude > 180.0)
       throw RangeError.range(longitude, -180, 180, "Longitude");
     if (latitude < -90.0 || latitude > 90.0)
-      throw RangeError.range(latitude, -180, 180, "Latitude");
+      throw RangeError.range(latitude, -90, 90, "Latitude");
 
     if (precision % 2 == 1) {
       precision = precision + 1;
@@ -143,7 +142,7 @@ class GeoHasher {
     List<int> latitudeBits = _doubleToBits(
         value: latitude, lower: -90.0, upper: 90.0, length: precision * 5);
 
-    List<int> ret = List<int>();
+    List<int> ret = [];
     for (int i = 0; i < longitudeBits.length; i++) {
       ret.add(longitudeBits[i]);
       ret.add(latitudeBits[i]);
@@ -161,17 +160,15 @@ class GeoHasher {
   /// Decodes a given String into a List<double> containing Longitude and
   /// Latitude in decimal degrees.
   List<double> decode(String geohash) {
-    if (geohash == null)
-      throw ArgumentError.notNull(geohash);
-    else if (geohash == "")
+    if (geohash.isEmpty)
       throw ArgumentError.value(geohash, "geohash");
     else if (!geohash
         .contains(new RegExp(r'^[0123456789bcdefghjkmnpqrstuvwxyz]+$')))
       throw ArgumentError("Invalid character in GeoHash");
 
     List<int> bits = _geoHashToBits(geohash);
-    List<int> longitudeBits = List<int>();
-    List<int> latitudeBits = List<int>();
+    List<int> longitudeBits = [];
+    List<int> latitudeBits = [];
 
     for (int i = 0; i < bits.length; i++) {
       if (i % 2 == 0 || i == 0) {
@@ -189,10 +186,9 @@ class GeoHasher {
 
   /// Returns a String geohash of the neighbor of the given String in the given
   /// direction.
-  String _adjacent({String geohash, String direction}) {
+  String _adjacent({required String geohash, required String direction}) {
     assert(direction.contains(new RegExp(r'[nsewNSEW]')),
         "Invalid Direction $direction not in NSEW");
-    assert(geohash != null, "Invalid GeoHash");
 
     Map<String, List> neighbor = {
       'n': [
@@ -224,20 +220,18 @@ class GeoHasher {
     String parent = geohash.substring(0, geohash.length - 1);
     int t = geohash.length % 2;
 
-    if (border[direction][t].toString().contains(last) && parent != null) {
+    if (border[direction]![t].toString().contains(last)) {
       parent = _adjacent(geohash: parent, direction: direction);
     }
 
     return parent +
-        _baseSequence[neighbor[direction][t].toString().indexOf(last)];
+        _baseSequence[neighbor[direction]![t].toString().indexOf(last)];
   }
 
   /// Returns a Map<String, String> containing the `Direction` as the key and
   /// the value being the geohash of the neighboring geohash in that direction.
   Map<String, String> neighbors(String geohash) {
-    if (geohash == null)
-      throw ArgumentError.notNull(geohash);
-    else if (geohash == "")
+    if (geohash.isEmpty)
       throw ArgumentError.value(geohash, "geohash");
     else if (!geohash
         .contains(new RegExp(r'^[0123456789bcdefghjkmnpqrstuvwxyz]+$')))
@@ -278,15 +272,13 @@ class GeoHash {
   }
 
   /// Returns the double longitude with an optional decimal accuracy
-  double longitude({int decimalAccuracy}) {
-    if (decimalAccuracy == null)
-      return _longitude;
-    else {}
+  double longitude({int? decimalAccuracy}) {
+    if (decimalAccuracy == null) return _longitude;
     return double.parse(_longitude.toStringAsFixed(decimalAccuracy));
   }
 
   /// Returns the double latitude with an optional decimal accuracy
-  double latitude({int decimalAccuracy}) {
+  double latitude({int? decimalAccuracy}) {
     if (decimalAccuracy == null)
       return _latitude;
     else
@@ -295,31 +287,28 @@ class GeoHash {
 
   /// Returns a Map<String, String> containing the `Direction` as the key and
   /// the value being the geohash of the neighboring geohash in that direction.
-  Map<String, String> get neighbors {
-    return _neighbors;
-  }
+  Map<String, String> get neighbors => _neighbors;
 
   /// Returns a String geohash of a neighboring geohash in a given direction
   String neighbor(Direction direction) {
-    return _neighbors[direction.toString().split(".")[1]];
+    return _neighbors[direction.toString().split(".")[1]]!;
   }
 
   /// Constructor given a String geohash
-  GeoHash(String geohash) {
-    _geohash = geohash;
-    _neighbors = GeoHasher().neighbors(geohash);
-    _longitude = GeoHasher().decode(geohash)[0];
-    _latitude = GeoHasher().decode(geohash)[1];
-  }
+  GeoHash(this._geohash)
+      : _neighbors = GeoHasher().neighbors(_geohash),
+        _longitude = GeoHasher().decode(_geohash)[0],
+        _latitude = GeoHasher().decode(_geohash)[1];
 
   /// Constructor given Longitude and Latitude
   GeoHash.fromDecimalDegrees(double longitude, double latitude,
-      {int precision = 9}) {
-    this._longitude = longitude;
-    this._latitude = latitude;
-    _geohash = GeoHasher().encode(longitude, latitude, precision: precision);
-    _neighbors = GeoHasher().neighbors(_geohash);
-  }
+      {int precision = 9})
+      : _longitude = longitude,
+        _latitude = latitude,
+        _geohash =
+            GeoHasher().encode(longitude, latitude, precision: precision),
+        _neighbors = GeoHasher().neighbors(
+            GeoHasher().encode(longitude, latitude, precision: precision));
 
   /// Returns true if given geohash is equal to or is a neighbor of this one.
   bool isNeighbor(String geohash) {
