@@ -13,7 +13,7 @@ can be given a location and will contain all needed information for that GeoHash
 GeoHash myHash = GeoHash("9yf0zhhtj");
 // Immediately be able to get all other information related to it
 myHash.geohash;
-myHash.longitude;
+myHash.longitude();
 myHash.latitude(decimalAccuracy: 4);
 myHash.neighbors; // Returns a Map with itself and 8 surrounding neighbors
 myHash.neighbor(Direction.NORTH);
