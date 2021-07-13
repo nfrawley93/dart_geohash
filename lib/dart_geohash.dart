@@ -131,7 +131,7 @@ class GeoHasher {
     if (longitude < -180.0 || longitude > 180.0)
       throw RangeError.range(longitude, -180, 180, "Longitude");
     if (latitude < -90.0 || latitude > 90.0)
-      throw RangeError.range(latitude, -180, 180, "Latitude");
+      throw RangeError.range(latitude, -90, 90, "Latitude");
 
     if (precision % 2 == 1) {
       precision = precision + 1;
