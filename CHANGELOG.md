@@ -1,3 +1,7 @@
+## [2.0.1] - 2021-03-07
+
+* Fix outstanding null safety update issues
+
 ## [2.0.0] - 2021-03-07
 
 * Sound null safety
