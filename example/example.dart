@@ -1,8 +1,7 @@
 import 'package:dart_geohash/dart_geohash.dart';
 
 void main() {
-
-  GeoHasher geoHasher = GeoHasher();
+  var geoHasher = GeoHasher();
 
   // Encoding Example
   // Given a longitude and latitude
@@ -18,7 +17,7 @@ void main() {
   // Decode takes a geohash and returns a List[2] with longitude and latitude
   // The results are not automatically adjusted to the accuracy (length) of the
   // given geocode. You will need to decide what degree of accuracy is required
-  print(geoHasher.decode("9yf0zhhtj"));
+  print(geoHasher.decode('9yf0zhhtj'));
   // Both of these will give the same geohash as shown above accuracy at
   // "human/tree" level. So be careful when determining accuracy
   print(geoHasher.encode(-98.12346696853638, 38.123438358306885, precision: 9));
@@ -28,7 +27,7 @@ void main() {
   // 8 surrounding squares as a map with given directions
   // This will return the other geohash at all the same level of accuracy as the
   // one given
-  print(geoHasher.neighbors("9yf0zhhtj"));
+  print(geoHasher.neighbors('9yf0zhhtj'));
 
   /* longitude and latitude are roughly
   decimal   places 	    rough scale
@@ -57,7 +56,7 @@ void main() {
   */
 
 
-  GeoHash myHash = GeoHash("9yf0zhhtj");
+  var myHash = GeoHash('9yf0zhhtj');
   print(myHash.geohash);
   print(myHash.longitude);
   print(myHash.longitude(decimalAccuracy: 4));
@@ -66,7 +65,7 @@ void main() {
   print(myHash.neighbors);
   print(myHash.neighbor(Direction.NORTH));
 
-  GeoHash myOtherHash = GeoHash.fromDecimalDegrees(-98.1235, 38.1234);
+  var myOtherHash = GeoHash.fromDecimalDegrees(-98.1235, 38.1234);
   print(myOtherHash.geohash);
   print(myOtherHash.longitude);
   print(myOtherHash.longitude(decimalAccuracy: 4));
