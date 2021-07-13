@@ -124,19 +124,14 @@ class GeoHasher {
   }
 
   /// Encodes a given Longitude and Latitude into a String geohash
-  String encode(
-    double longitude,
-    double latitude, {
-    int precision = 12,
-  }) {
-    if (longitude < -180.0 || longitude > 180.0) {
-      throw RangeError.range(longitude, -180, 180, 'Longitude');
-    }
-    if (latitude < -90.0 || latitude > 90.0) {
-      throw RangeError.range(latitude, -180, 180, 'Latitude');
-    }
-
-    final originalPrecision = precision + 0;
+  String encode(double longitude, double latitude, {int precision = 12}) {
+    bool precisionOdd = precision % 2 == 1;
+    int originalPrecision = precision + 0;
+    if (longitude == null || latitude == null) throw ArgumentError.notNull();
+    if (longitude < -180.0 || longitude > 180.0)
+      throw RangeError.range(longitude, -180, 180, "Longitude");
+    if (latitude < -90.0 || latitude > 90.0)
+      throw RangeError.range(latitude, -90, 90, "Latitude");
 
     if (precision % 2 == 1) {
       precision = precision + 1;
