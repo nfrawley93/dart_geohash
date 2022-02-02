@@ -341,7 +341,7 @@ class GeoHash {
       return false;
     }
 
-    return _neighbors.values.contains((final String value) => value == geohash);
+    return _neighbors.values.toList().contains(geohash);
   }
 
   /// Returns true if the given geohash contains this one within it.
