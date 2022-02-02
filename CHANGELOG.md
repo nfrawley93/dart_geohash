@@ -1,3 +1,8 @@
+## [2.0.2] - 2022-02-01
+
+* Fix individual neighbor check
+* Add more test cases
+
 ## [2.0.1] - 2021-03-07
 
 * Fix outstanding null safety update issues
