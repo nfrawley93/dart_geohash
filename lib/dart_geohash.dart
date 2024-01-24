@@ -15,24 +15,59 @@ enum Direction {
   CENTRAL,
 }
 
+enum Direction4 {
+  NORTH,
+  SOUTH,
+  EAST,
+  WEST,
+}
+
 /// A class that can convert a geohash String to [Longitude, Latitude] and back.
 class GeoHasher {
   static final String _baseSequence = '0123456789bcdefghjkmnpqrstuvwxyz';
 
   /// Creates a Map of available characters for a geohash
-  final _base32Map = <String, int>{
+  static final _base32Map = <String, int>{
     for (var value in _baseSequence.split(''))
       value: _baseSequence.indexOf(value),
   };
 
   /// Creates a reversed Map of available characters for a geohash
-  final _base32MapR = <int, String>{
+  static final _base32MapR = <int, String>{
     for (var value in _baseSequence.split(''))
       _baseSequence.indexOf(value): value,
   };
 
+  static final _neighbor = <Direction4, List<String>>{
+    Direction4.NORTH: [
+      'p0r21436x8zb9dcf5h7kjnmqesgutwvy',
+      'bc01fg45238967deuvhjyznpkmstqrwx'
+    ],
+    Direction4.SOUTH: [
+      '14365h7k9dcfesgujnmqp0r2twvyx8zb',
+      '238967debc01fg45kmstqrwxuvhjyznp'
+    ],
+    Direction4.EAST: [
+      'bc01fg45238967deuvhjyznpkmstqrwx',
+      'p0r21436x8zb9dcf5h7kjnmqesgutwvy'
+    ],
+    Direction4.WEST: [
+      '238967debc01fg45kmstqrwxuvhjyznp',
+      '14365h7k9dcfesgujnmqp0r2twvyx8zb'
+    ],
+  };
+
+  static final _border = <Direction4, List<String>>{
+    Direction4.NORTH: ['prxz', 'bcfguvyz'],
+    Direction4.SOUTH: ['028b', '0145hjnp'],
+    Direction4.EAST: ['bcfguvyz', 'prxz'],
+    Direction4.WEST: ['0145hjnp', '028b'],
+  };
+
+  static final geohashRegExp = RegExp(r'^[0123456789bcdefghjkmnpqrstuvwxyz]+$');
+
   /// Converts a List<int> of bits into a double for Longitude and Latitude
-  double _bitsToDouble({
+  static double _bitsToDouble({
     required List<int> bits,
     double lower = -90.0,
     double middle = 0.0,
@@ -51,7 +86,7 @@ class GeoHasher {
   }
 
   /// Converts a double value Longitude or Latitude to a List<int> of bits
-  List<int> _doubleToBits({
+  static List<int> _doubleToBits({
     required double value,
     double lower = -90.0,
     double middle = 0.0,
@@ -75,7 +110,7 @@ class GeoHasher {
   }
 
   /// Converts a List<int> bits into a String geohash
-  String _bitsToGeoHash(List<int> bitValue) {
+  static String _bitsToGeoHash(List<int> bitValue) {
     final geoHashList = <String>[];
 
     var remainingBits = List<int>.from(bitValue);
@@ -99,7 +134,7 @@ class GeoHasher {
   }
 
   /// Converts a String geohash into List<int> bits
-  List<int> _geoHashToBits(String geohash) {
+  static List<int> _geoHashToBits(String geohash) {
     final bitList = <int>[];
 
     for (final letter in geohash.split('')) {
@@ -199,53 +234,23 @@ class GeoHasher {
 
   /// Returns a String geohash of the neighbor of the given String in the given
   /// direction.
-  String _adjacent({
+  static String _adjacent({
     required String geohash,
-    required String direction,
+    required Direction4 direction,
   }) {
-    assert(
-      direction.contains(RegExp(r'[nsewNSEW]')) == true,
-      'Invalid Direction $direction not in NSEW',
-    );
     if (geohash == '') {
       throw ArgumentError.value(geohash, 'geohash');
     }
-
-    final neighbor = <String, List>{
-      'n': [
-        'p0r21436x8zb9dcf5h7kjnmqesgutwvy',
-        'bc01fg45238967deuvhjyznpkmstqrwx'
-      ],
-      's': [
-        '14365h7k9dcfesgujnmqp0r2twvyx8zb',
-        '238967debc01fg45kmstqrwxuvhjyznp'
-      ],
-      'e': [
-        'bc01fg45238967deuvhjyznpkmstqrwx',
-        'p0r21436x8zb9dcf5h7kjnmqesgutwvy'
-      ],
-      'w': [
-        '238967debc01fg45kmstqrwxuvhjyznp',
-        '14365h7k9dcfesgujnmqp0r2twvyx8zb'
-      ],
-    };
-    final border = <String, List>{
-      'n': ['prxz', 'bcfguvyz'],
-      's': ['028b', '0145hjnp'],
-      'e': ['bcfguvyz', 'prxz'],
-      'w': ['0145hjnp', '028b'],
-    };
 
     final last = geohash[geohash.length - 1];
     final t = geohash.length % 2;
 
     var parent = geohash.substring(0, geohash.length - 1);
-    if (border[direction]![t].toString().contains(last)) {
+    if (_border[direction]![t].contains(last)) {
       parent = _adjacent(geohash: parent, direction: direction);
     }
 
-    return parent +
-        _baseSequence[neighbor[direction]![t].toString().indexOf(last)];
+    return parent + _baseSequence[_neighbor[direction]![t].indexOf(last)];
   }
 
   /// Returns a Map<String, String> containing the `Direction` as the key and
@@ -254,28 +259,28 @@ class GeoHasher {
     if (geohash == '') {
       throw ArgumentError.value(geohash, 'geohash');
     }
-    if (!geohash.contains(RegExp(r'^[0123456789bcdefghjkmnpqrstuvwxyz]+$'))) {
+    if (!geohash.contains(geohashRegExp)) {
       throw ArgumentError('Invalid character in GeoHash');
     }
 
+    var adjacentN = _adjacent(geohash: geohash, direction: Direction4.NORTH);
+    var adjacentS = _adjacent(geohash: geohash, direction: Direction4.SOUTH);
     return {
-      Direction.NORTH.toString().split('.')[1]:
-          _adjacent(geohash: geohash, direction: 'n'),
-      Direction.NORTHEAST.toString().split('.')[1]: _adjacent(
-          geohash: _adjacent(geohash: geohash, direction: 'n'), direction: 'e'),
-      Direction.EAST.toString().split('.')[1]:
-          _adjacent(geohash: geohash, direction: 'e'),
-      Direction.SOUTHEAST.toString().split('.')[1]: _adjacent(
-          geohash: _adjacent(geohash: geohash, direction: 's'), direction: 'e'),
-      Direction.SOUTH.toString().split('.')[1]:
-          _adjacent(geohash: geohash, direction: 's'),
-      Direction.SOUTHWEST.toString().split('.')[1]: _adjacent(
-          geohash: _adjacent(geohash: geohash, direction: 's'), direction: 'w'),
-      Direction.WEST.toString().split('.')[1]:
-          _adjacent(geohash: geohash, direction: 'w'),
-      Direction.NORTHWEST.toString().split('.')[1]: _adjacent(
-          geohash: _adjacent(geohash: geohash, direction: 'n'), direction: 'w'),
-      Direction.CENTRAL.toString().split('.')[1]: geohash
+      Direction.NORTH.name: adjacentN,
+      Direction.NORTHEAST.name:
+          _adjacent(geohash: adjacentN, direction: Direction4.EAST),
+      Direction.EAST.name:
+          _adjacent(geohash: geohash, direction: Direction4.EAST),
+      Direction.SOUTHEAST.name:
+          _adjacent(geohash: adjacentS, direction: Direction4.EAST),
+      Direction.SOUTH.name: adjacentS,
+      Direction.SOUTHWEST.name:
+          _adjacent(geohash: adjacentS, direction: Direction4.WEST),
+      Direction.WEST.name:
+          _adjacent(geohash: geohash, direction: Direction4.WEST),
+      Direction.NORTHWEST.name:
+          _adjacent(geohash: adjacentN, direction: Direction4.WEST),
+      Direction.CENTRAL.name: geohash
     };
   }
 }
@@ -331,16 +336,13 @@ class GeoHash {
   Map<String, String> get neighbors => _neighbors;
 
   /// Returns a String geohash of a neighboring geohash in a given direction
-  String? neighbor(Direction direction) {
-    return _neighbors[direction.toString().split('.')[1]];
-  }
+  String? neighbor(Direction direction) => _neighbors[direction.name];
 
   /// Returns true if given geohash is equal to or is a neighbor of this one.
   bool isNeighbor(String geohash) {
     if (geohash.length != _geohash.length) {
       return false;
     }
-
     return _neighbors.values.toList().contains(geohash);
   }
 
@@ -349,11 +351,9 @@ class GeoHash {
     if (geohash.length > _geohash.length) {
       return false;
     }
-
     if (_geohash.substring(0, geohash.length) == geohash) {
       return true;
     }
-
     return false;
   }
 
@@ -362,16 +362,12 @@ class GeoHash {
     if (geohash.length < _geohash.length) {
       return false;
     }
-
     if (geohash.substring(0, _geohash.length) == _geohash) {
       return true;
     }
-
     return false;
   }
 
   /// Returns a new Geohash for the parent of this one.
-  GeoHash parent() {
-    return GeoHash(_geohash.substring(0, _geohash.length - 1));
-  }
+  GeoHash parent() => GeoHash(_geohash.substring(0, _geohash.length - 1));
 }
