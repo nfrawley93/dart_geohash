@@ -15,7 +15,7 @@ enum Direction {
   CENTRAL,
 }
 
-enum Direction4 {
+enum _Direction4 {
   NORTH,
   SOUTH,
   EAST,
@@ -38,30 +38,30 @@ class GeoHasher {
       _baseSequence.indexOf(value): value,
   };
 
-  static final _neighbor = <Direction4, List<String>>{
-    Direction4.NORTH: [
+  static final _neighbor = <_Direction4, List<String>>{
+    _Direction4.NORTH: [
       'p0r21436x8zb9dcf5h7kjnmqesgutwvy',
       'bc01fg45238967deuvhjyznpkmstqrwx'
     ],
-    Direction4.SOUTH: [
+    _Direction4.SOUTH: [
       '14365h7k9dcfesgujnmqp0r2twvyx8zb',
       '238967debc01fg45kmstqrwxuvhjyznp'
     ],
-    Direction4.EAST: [
+    _Direction4.EAST: [
       'bc01fg45238967deuvhjyznpkmstqrwx',
       'p0r21436x8zb9dcf5h7kjnmqesgutwvy'
     ],
-    Direction4.WEST: [
+    _Direction4.WEST: [
       '238967debc01fg45kmstqrwxuvhjyznp',
       '14365h7k9dcfesgujnmqp0r2twvyx8zb'
     ],
   };
 
-  static final _border = <Direction4, List<String>>{
-    Direction4.NORTH: ['prxz', 'bcfguvyz'],
-    Direction4.SOUTH: ['028b', '0145hjnp'],
-    Direction4.EAST: ['bcfguvyz', 'prxz'],
-    Direction4.WEST: ['0145hjnp', '028b'],
+  static final _border = <_Direction4, List<String>>{
+    _Direction4.NORTH: ['prxz', 'bcfguvyz'],
+    _Direction4.SOUTH: ['028b', '0145hjnp'],
+    _Direction4.EAST: ['bcfguvyz', 'prxz'],
+    _Direction4.WEST: ['0145hjnp', '028b'],
   };
 
   static final geohashRegExp = RegExp(r'^[0123456789bcdefghjkmnpqrstuvwxyz]+$');
@@ -241,7 +241,7 @@ class GeoHasher {
   /// direction.
   static String _adjacent({
     required String geohash,
-    required Direction4 direction,
+    required _Direction4 direction,
   }) {
     if (geohash == '') {
       throw ArgumentError.value(geohash, 'geohash');
@@ -262,23 +262,23 @@ class GeoHasher {
   /// the value being the geohash of the neighboring geohash in that direction.
   Map<String, String> neighbors(String geohash) {
     _ensureValid(geohash);
-    var adjacentN = _adjacent(geohash: geohash, direction: Direction4.NORTH);
-    var adjacentS = _adjacent(geohash: geohash, direction: Direction4.SOUTH);
+    var adjacentN = _adjacent(geohash: geohash, direction: _Direction4.NORTH);
+    var adjacentS = _adjacent(geohash: geohash, direction: _Direction4.SOUTH);
     return {
       Direction.NORTH.name: adjacentN,
       Direction.NORTHEAST.name:
-          _adjacent(geohash: adjacentN, direction: Direction4.EAST),
+          _adjacent(geohash: adjacentN, direction: _Direction4.EAST),
       Direction.EAST.name:
-          _adjacent(geohash: geohash, direction: Direction4.EAST),
+          _adjacent(geohash: geohash, direction: _Direction4.EAST),
       Direction.SOUTHEAST.name:
-          _adjacent(geohash: adjacentS, direction: Direction4.EAST),
+          _adjacent(geohash: adjacentS, direction: _Direction4.EAST),
       Direction.SOUTH.name: adjacentS,
       Direction.SOUTHWEST.name:
-          _adjacent(geohash: adjacentS, direction: Direction4.WEST),
+          _adjacent(geohash: adjacentS, direction: _Direction4.WEST),
       Direction.WEST.name:
-          _adjacent(geohash: geohash, direction: Direction4.WEST),
+          _adjacent(geohash: geohash, direction: _Direction4.WEST),
       Direction.NORTHWEST.name:
-          _adjacent(geohash: adjacentN, direction: Direction4.WEST),
+          _adjacent(geohash: adjacentN, direction: _Direction4.WEST),
       Direction.CENTRAL.name: geohash
     };
   }
