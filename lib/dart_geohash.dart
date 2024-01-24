@@ -204,16 +204,21 @@ class GeoHasher {
     return geohashString;
   }
 
+  /// Checks if a given String geohash is valid, and throws an exception if not.
+  static void _ensureValid(String geohash) {
+    if (geohash.isEmpty) {
+      throw ArgumentError.value(geohash, 'geohash', 'GeoHash is empty');
+    }
+    if (!geohash.contains(geohashRegExp)) {
+      throw ArgumentError.value(
+          geohash, 'geohash', 'Invalid character in GeoHash');
+    }
+  }
+
   /// Decodes a given String into a List<double> containing Longitude and
   /// Latitude in decimal degrees.
   List<double> decode(String geohash) {
-    if (geohash == '') {
-      throw ArgumentError.value(geohash, 'geohash');
-    }
-    if (!geohash.contains(RegExp(r'^[0123456789bcdefghjkmnpqrstuvwxyz]+$'))) {
-      throw ArgumentError('Invalid character in GeoHash');
-    }
-
+    _ensureValid(geohash);
     final bits = _geoHashToBits(geohash);
     final longitudeBits = <int>[];
     final latitudeBits = <int>[];
@@ -256,13 +261,7 @@ class GeoHasher {
   /// Returns a Map<String, String> containing the `Direction` as the key and
   /// the value being the geohash of the neighboring geohash in that direction.
   Map<String, String> neighbors(String geohash) {
-    if (geohash == '') {
-      throw ArgumentError.value(geohash, 'geohash');
-    }
-    if (!geohash.contains(geohashRegExp)) {
-      throw ArgumentError('Invalid character in GeoHash');
-    }
-
+    _ensureValid(geohash);
     var adjacentN = _adjacent(geohash: geohash, direction: Direction4.NORTH);
     var adjacentS = _adjacent(geohash: geohash, direction: Direction4.SOUTH);
     return {
