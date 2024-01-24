@@ -64,7 +64,7 @@ class GeoHasher {
     _Direction4.WEST: ['0145hjnp', '028b'],
   };
 
-  static final geohashRegExp = RegExp(r'^[0123456789bcdefghjkmnpqrstuvwxyz]+$');
+  static final geohashRegExp = RegExp('^[$_baseSequence]+\$');
 
   /// Converts a List<int> of bits into a double for Longitude and Latitude
   static double _bitsToDouble({
