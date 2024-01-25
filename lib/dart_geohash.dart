@@ -116,7 +116,7 @@ class GeoHasher {
     var remainingBits = List<int>.from(bitValue);
     var subBits = <int>[];
     String subBitsAsString;
-    for (var i = 0; i < bitValue.length / 5; i++) {
+    for (var i = 0, n = bitValue.length / 5; i < n; i++) {
       subBits = remainingBits.sublist(0, 5);
       remainingBits = remainingBits.sublist(5);
 
