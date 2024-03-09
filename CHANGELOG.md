@@ -1,3 +1,9 @@
+## [2.1.0] - 2024-03-08
+
+* Refactoring and code cleanups - @lukehutch
+* Fix outstanding parent-most neighbor InvalidArg in some edge cases
+* Add more test cases - @BitBeep
+
 ## [2.0.2] - 2022-02-01
 
 * Fix individual neighbor check

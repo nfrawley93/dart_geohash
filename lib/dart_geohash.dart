@@ -251,7 +251,7 @@ class GeoHasher {
     final t = geohash.length % 2;
 
     var parent = geohash.substring(0, geohash.length - 1);
-    if (_border[direction]![t].contains(last)) {
+    if (_border[direction]![t].contains(last) && parent != '') {
       parent = _adjacent(geohash: parent, direction: direction);
     }
 

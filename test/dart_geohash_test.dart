@@ -33,6 +33,32 @@ void main() {
     expect(
         geohash.encode(-97.79499292373657, 30.23710012435913), '9v6kn87zgs00');
 
+    // region Test Encode @BitBeep
+    expect(geohash.encode(-139.832302, 24.98346, precision: 0), '');
+    expect(geohash.encode(-139.832302, 24.98346, precision: 1),
+        '8');
+    expect(geohash.encode(-139.832302, 24.98346, precision: 9),
+        '8ukw4h15p');
+    expect(geohash.encode(-139.832302, 24.98346, precision: 10),
+        '8ukw4h15pn');
+    expect(geohash.encode(-139.832302, 24.98346, precision: 20),
+        '8ukw4h15pnqrzn2brvs7');
+    expect(
+        geohash.encode(-139.832302, 24.98346), '8ukw4h15pnqr');
+
+    // region Test Encode @BitBeep
+    expect(geohash.encode(-180.0, 81.477374, precision: 0), '');
+    expect(geohash.encode(-180.0, 81.477374, precision: 1),
+        'b');
+    expect(geohash.encode(-180.0, 81.477374, precision: 9),
+        'bn2p80800');
+    expect(geohash.encode(-180.0, 81.477374, precision: 10),
+        'bn2p808005');
+    expect(geohash.encode(-180.0, 81.477374, precision: 20),
+        'bn2p808005258h0j8h20');
+    expect(
+        geohash.encode(-180.0, 81.477374), 'bn2p80800525');
+
     // Multiple ones that should throw an Exception
     expect(() => geohash.encode(-181, 45), throwsArgumentError);
     expect(() => geohash.encode(45, 95), throwsArgumentError);
@@ -49,6 +75,32 @@ void main() {
       'WEST': '9v6kn87zf',
       'NORTHWEST': '9v6kn8eb4',
       'CENTRAL': '9v6kn87zg',
+    });
+
+    //region Test neighbors @BitBeep
+    expect(geohash.neighbors('8'), {
+      'NORTH': 'b',
+      'NORTHEAST': 'c',
+      'EAST': '9',
+      'SOUTHEAST': '3',
+      'SOUTH': '2',
+      'SOUTHWEST': 'r',
+      'WEST': 'x',
+      'NORTHWEST': 'z',
+      'CENTRAL': '8',
+    });
+
+    //region Test neighbors @BitBeep
+    expect(geohash.neighbors('b'), {
+      'NORTH': '0',
+      'NORTHEAST': '1',
+      'EAST': 'c',
+      'SOUTHEAST': '9',
+      'SOUTH': '8',
+      'SOUTHWEST': 'x',
+      'WEST': 'z',
+      'NORTHWEST': 'p',
+      'CENTRAL': 'b',
     });
 
     // Multiple ones that should throw an Exception
